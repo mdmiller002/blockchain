@@ -1,5 +1,8 @@
 plugins {
     id 'java'
+    id 'application'
+    id 'org.springframework.boot' version '2.2.2.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
 }
 
 group 'org.example'
@@ -13,4 +16,28 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    // https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk16
+    compile group: 'org.bouncycastle', name: 'bcprov-jdk16', version: '1.45'
+
+    // https://mvnrepository.com/artifact/com.google.code.gson/gson
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.6'
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+}
+
+mainClassName = 'com.blockchain.main.Main'
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.blockchain.main.Main'
+        )
+    }
+}
+
+bootRun {
+    main = 'com.blockchain.main.Application'
 }
