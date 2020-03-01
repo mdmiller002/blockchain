@@ -6,29 +6,33 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Blockchain {
+public class Ledger {
 
-  private static final Logger LOG = Logger.getLogger(Blockchain.class);
-  private static Blockchain instance;
+  private static final Logger LOG = Logger.getLogger(Ledger.class);
+  private static Ledger instance;
   private ArrayList<Block> blockChain;
   private BigDecimal minimumTransaction;
   private int difficulty;
   private HashMap<String, TransactionOutput> UTXOs; //list of all unspent transactions.
 
-  public static Blockchain getInstance() {
+  public static Ledger getInstance() {
     if (instance == null) {
-      instance = new Blockchain();
+      instance = new Ledger();
     }
     return instance;
   }
 
-  private Blockchain() {
+  private Ledger() {
     blockChain = new ArrayList<>();
     UTXOs = new HashMap<>();
     difficulty = 3;
     minimumTransaction = new BigDecimal("1.00");
   }
 
+  /**
+   * Add a block to the chain by mining it with the network's current difficulty
+   * @param block block to add to the chain
+   */
   public void addBlock(Block block) {
     block.mineBlock(difficulty);
     blockChain.add(block);

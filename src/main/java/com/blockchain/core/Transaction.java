@@ -16,7 +16,7 @@ public class Transaction {
   private PublicKey recipient;
   private BigDecimal value;
   private byte[] signature;
-  private Blockchain blockchain;
+  private Ledger ledger;
 
   private ArrayList<TransactionInput> inputs;
   private ArrayList<TransactionOutput> outputs = new ArrayList<>();
@@ -28,7 +28,7 @@ public class Transaction {
     this.recipient = recipient;
     this.value = value;
     this.inputs = inputs;
-    blockchain = Blockchain.getInstance();
+    ledger = Ledger.getInstance();
   }
 
   public boolean processTransaction() {
@@ -38,10 +38,10 @@ public class Transaction {
     }
 
     for (TransactionInput input : inputs) {
-      input.setUTXO(blockchain.getUTXOs().get(input.getTransactionOutputId()));
+      input.setUTXO(ledger.getUTXOs().get(input.getTransactionOutputId()));
     }
 
-    if (getInputsValue().compareTo(blockchain.getMinimumTransaction()) < 0) {
+    if (getInputsValue().compareTo(ledger.getMinimumTransaction()) < 0) {
       LOG.debug("Transaction inputs too small: " + getInputsValue());
       return false;
     }
@@ -52,14 +52,14 @@ public class Transaction {
     outputs.add(new TransactionOutput(this.sender, leftOver, transactionId));
 
     for (TransactionOutput o : outputs) {
-      blockchain.addUTXO(o.getId(), o);
+      ledger.addUTXO(o.getId(), o);
     }
 
     for (TransactionInput input : inputs) {
       if (input.getUTXO() == null) {
         continue;
       }
-      blockchain.getUTXOs().remove(input.getUTXO().getId());
+      ledger.getUTXOs().remove(input.getUTXO().getId());
     }
     return true;
   }
