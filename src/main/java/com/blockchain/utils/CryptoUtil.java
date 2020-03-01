@@ -1,15 +1,19 @@
 package com.blockchain.utils;
 
 import com.blockchain.core.Transaction;
+import org.apache.log4j.Logger;
 
 import java.security.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 
 /**
  * Static utility class with crypto helper functions
  */
 public class CryptoUtil {
+
+  private static final Logger LOG = Logger.getLogger(CryptoUtil.class);
 
   private CryptoUtil() {
   }
@@ -26,7 +30,7 @@ public class CryptoUtil {
       MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
       hashBytes = messageDigest.digest(data.getBytes());
     } catch (NoSuchAlgorithmException e) {
-      System.err.println(e.getMessage());
+      LOG.error("No such algorithm exception", e);
     }
     if (hashBytes != null) {
       StringBuilder buff = new StringBuilder();
@@ -35,6 +39,7 @@ public class CryptoUtil {
       }
       return buff.toString();
     } else {
+      LOG.error("Error hashing bytes for block");
       throw new IllegalStateException("Error hashing bytes for block");
     }
   }
@@ -54,9 +59,10 @@ public class CryptoUtil {
       dsa.initSign(privateKey);
       byte[] strByte = input.getBytes();
       dsa.update(strByte);
-      byte[] realSig = dsa.sign();
-      output = realSig;
+      output = dsa.sign();
     } catch (Exception e) {
+      LOG.error("Error applying ECDSA Signature for private key " + getStringFromKey(privateKey) +
+              " and data " + input, e);
       throw new RuntimeException(e);
     }
     return output;
@@ -77,6 +83,8 @@ public class CryptoUtil {
       ecdsaVerify.update(data.getBytes());
       return ecdsaVerify.verify(signature);
     } catch (Exception e) {
+      LOG.error("Error verifying signature for public key " + getStringFromKey(publicKey) +
+              ", data " + data + ", and signature " + Arrays.toString(signature), e);
       throw new RuntimeException(e);
     }
   }

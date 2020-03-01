@@ -1,6 +1,8 @@
 package com.blockchain.core;
 
 
+import org.apache.log4j.Logger;
+
 import java.math.BigDecimal;
 import java.security.*;
 import java.security.spec.ECGenParameterSpec;
@@ -10,6 +12,7 @@ import java.util.Map;
 
 public class Wallet {
 
+  private final Logger LOG = Logger.getLogger(Wallet.class);
   private PrivateKey privateKey;
   private PublicKey publicKey;
   private Blockchain blockchain;
@@ -33,6 +36,7 @@ public class Wallet {
       privateKey = keyPair.getPrivate();
       publicKey = keyPair.getPublic();
     } catch (Exception e) {
+      LOG.error("Failed to generate key pair: ", e);
       throw new RuntimeException(e);
     }
   }
@@ -55,7 +59,7 @@ public class Wallet {
 
   public Transaction sendFunds(PublicKey recipient, BigDecimal value) {
     if (getBalance().compareTo(value) < 0) {
-      System.out.println("Not enough funds");
+      LOG.debug("Insufficient funds: attempted to send " + value + " but balance is " + getBalance());
       return null;
     }
 

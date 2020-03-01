@@ -1,5 +1,6 @@
 package com.blockchain.core;
 
+import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,7 +10,6 @@ import java.math.RoundingMode;
 import java.security.Security;
 import java.sql.Timestamp;
 import java.util.Random;
-import java.util.logging.Logger;
 
 import static org.junit.Assert.*;
 
@@ -19,7 +19,7 @@ public class BlockchainTest {
   private Wallet walletA;
   private Wallet walletB;
   private Wallet coinBase;
-  private static final Logger LOG = Logger.getLogger(BlockchainTest.class.getName());
+  private static final Logger LOG = Logger.getLogger(BlockchainTest.class);
 
   @Before
   public void before() {
@@ -143,7 +143,7 @@ public class BlockchainTest {
         BigDecimal current = walletASender ? aCurrentBalance : bCurrentBalance;
 
         BigDecimal max = current.divide(new BigDecimal("2.00"), 2, RoundingMode.CEILING);
-        BigDecimal randFromDouble = new BigDecimal(Math.random());
+        BigDecimal randFromDouble = BigDecimal.valueOf(Math.random());
         BigDecimal randomValue = randFromDouble.multiply(max);
         randomValue = randomValue
                 .setScale(2, BigDecimal.ROUND_DOWN);

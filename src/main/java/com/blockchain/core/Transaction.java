@@ -1,6 +1,7 @@
 package com.blockchain.core;
 
 import com.blockchain.utils.CryptoUtil;
+import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.security.PrivateKey;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 
 public class Transaction {
 
+  private static final Logger LOG = Logger.getLogger(Transaction.class);
   private String transactionId;
   private PublicKey sender;
   private PublicKey recipient;
@@ -31,7 +33,7 @@ public class Transaction {
 
   public boolean processTransaction() {
     if (!verifySignature()) {
-      System.out.println("Transaction Signature failed to verify");
+      LOG.debug("Transaction Signature failed to verify");
       return false;
     }
 
@@ -40,7 +42,7 @@ public class Transaction {
     }
 
     if (getInputsValue().compareTo(blockchain.getMinimumTransaction()) < 0) {
-      System.out.println("Transaction inputs too small: " + getInputsValue());
+      LOG.debug("Transaction inputs too small: " + getInputsValue());
       return false;
     }
 
@@ -91,7 +93,7 @@ public class Transaction {
 
   private String calculateHash() {
     sequence++;
-    return CryptoUtil.sha256(getTransactionData() + Integer.toString(sequence));
+    return CryptoUtil.sha256(getTransactionData() + sequence);
   }
 
   public void generateSignature(PrivateKey privateKey) {
