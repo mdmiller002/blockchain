@@ -1,6 +1,7 @@
 package com.blockchain.core;
 
 import com.blockchain.utils.CryptoUtil;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 
@@ -9,6 +10,7 @@ import java.util.ArrayList;
  */
 public class Block {
 
+  private static final Logger LOG = Logger.getLogger(Block.class);
   private ArrayList<Transaction> transactions = new ArrayList<>();
   private String prevBlockHash;
   private String blockHash;
@@ -55,13 +57,18 @@ public class Block {
     return builder.toString();
   }
 
+  /**
+   * Add a transaction to the current block
+   * @param transaction Transaction instance to add to the block
+   * @return true if successful, false otherwise
+   */
   public boolean addTransaction(Transaction transaction) {
     if (transaction == null) {
       return false;
     }
     if (!"0".equals(prevBlockHash)) {
       if (!transaction.processTransaction()) {
-        System.out.println("Transaction failed to process");
+        LOG.error("Transaction failed to process");
         return false;
       }
     }

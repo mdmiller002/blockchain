@@ -1,11 +1,14 @@
 package com.blockchain.core;
 
+import org.apache.log4j.Logger;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Blockchain {
 
+  private static final Logger LOG = Logger.getLogger(Blockchain.class);
   private static Blockchain instance;
   private ArrayList<Block> blockChain;
   private BigDecimal minimumTransaction;
@@ -52,6 +55,7 @@ public class Blockchain {
   public boolean isChainValid() {
     for (int i = 1; i < blockChain.size(); i++) {
       if (!isCurrentBlockValid(blockChain.get(i), blockChain.get(i - 1))) {
+        LOG.error("Chain is not valid at block " + blockChain.get(i).getBlockHash());
         return false;
       }
     }

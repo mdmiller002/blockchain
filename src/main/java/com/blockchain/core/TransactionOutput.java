@@ -43,6 +43,6 @@ public class TransactionOutput {
       return false;
     }
     TransactionOutput other = (TransactionOutput) o;
-    return other.getId().equals(this.getId()) && other.getValue() == this.getValue();
+    return other.getId().equals(this.getId()) && other.getValue().equals(this.getValue());
   }
 }
