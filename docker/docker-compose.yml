@@ -2,12 +2,6 @@ version: '2.0'
 services:
   mongodb:
     container_name: mongodb
-    image: mongo
-    command:
-      - 'mongod'
-      - '-f'
-      - '/etc/mongo/mongo.conf'
-    volumes:
-      - './config:/etc/mongo'
+    image: mongo:4.2.5
     ports:
-      - '27017:27017'
+      - '27017-27019:27017-27019'
