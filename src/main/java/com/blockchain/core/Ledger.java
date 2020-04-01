@@ -32,10 +32,12 @@ public class Ledger {
   /**
    * Add a block to the chain by mining it with the network's current difficulty
    * @param block block to add to the chain
+   * @return Block new block instance
    */
-  public void addBlock(Block block) {
+  public Block addBlock(Block block) {
     block.mineBlock(difficulty);
     blockChain.add(block);
+    return block;
   }
 
   public void setDifficulty(int difficulty) {
