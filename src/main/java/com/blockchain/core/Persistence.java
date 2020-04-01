@@ -3,6 +3,7 @@ package com.blockchain.core;
 import com.blockchain.props.PropertyReader;
 import com.blockchain.utils.CryptoUtil;
 import com.mongodb.BasicDBObject;
+
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;

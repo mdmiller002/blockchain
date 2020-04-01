@@ -1,0 +1,13 @@
+version: '2.0'
+services:
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    command:
+      - 'mongod'
+      - '-f'
+      - '/etc/mongo/mongo.conf'
+    volumes:
+      - './config:/etc/mongo'
+    ports:
+      - '27017:27017'
