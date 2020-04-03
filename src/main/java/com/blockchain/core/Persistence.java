@@ -4,10 +4,7 @@ import com.blockchain.props.PropertyReader;
 import com.blockchain.utils.CryptoUtil;
 import com.mongodb.BasicDBObject;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +33,7 @@ public class Persistence {
     return instance;
   }
 
-  public void PersistBlock(Block block) {
+  public void persistBlock(Block block) {
     BasicDBObject blockObject = new BasicDBObject();
     blockObject.put("blockHash", block.getBlockHash());
     blockObject.put("prevBlockHash", block.getPrevBlockHash());
@@ -44,7 +41,7 @@ public class Persistence {
     blockObject.put("timestamp", block.getTimestamp());
     blockObject.put("merkleRoot", block.getMerkleRoot());
 
-    List<BasicDBObject> txObjectList = new ArrayList<BasicDBObject>();
+    List<BasicDBObject> txObjectList = new ArrayList<>();
     for (Transaction tx : block.getTransactions()) {
       BasicDBObject txObject = new BasicDBObject();
       txObject.put("transactionId", tx.getTransactionId());
