@@ -66,11 +66,9 @@ public class Block {
     if (transaction == null) {
       return false;
     }
-    if (!"0".equals(prevBlockHash)) {
-      if (!transaction.processTransaction()) {
-        LOG.error("Transaction failed to process");
-        return false;
-      }
+    if (!transaction.processTransaction()) {
+      LOG.error("Transaction failed to process");
+      return false;
     }
     transactions.add(transaction);
     return true;

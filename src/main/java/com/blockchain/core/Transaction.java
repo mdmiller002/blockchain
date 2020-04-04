@@ -6,7 +6,6 @@ import org.apache.log4j.Logger;
 import java.math.BigDecimal;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.ArrayList;
 
 public class Transaction {
 
@@ -16,19 +15,13 @@ public class Transaction {
   private PublicKey recipient;
   private BigDecimal value;
   private byte[] signature;
-  private Ledger ledger;
-
-  private ArrayList<TransactionInput> inputs;
-  private ArrayList<TransactionOutput> outputs = new ArrayList<>();
 
   private static int sequence = 0;
 
-  public Transaction(PublicKey sender, PublicKey recipient, BigDecimal value, ArrayList<TransactionInput> inputs) {
+  public Transaction(PublicKey sender, PublicKey recipient, BigDecimal value) {
     this.sender = sender;
     this.recipient = recipient;
     this.value = value;
-    this.inputs = inputs;
-    ledger = Ledger.getInstance();
   }
 
   public boolean processTransaction() {
@@ -36,59 +29,8 @@ public class Transaction {
       LOG.debug("Transaction Signature failed to verify");
       return false;
     }
-
-    for (TransactionInput input : inputs) {
-      input.setUTXO(ledger.getUTXOs().get(input.getTransactionOutputId()));
-    }
-
-    if (getInputsValue().compareTo(ledger.getMinimumTransaction()) < 0) {
-      LOG.debug("Transaction inputs too small: " + getInputsValue());
-      return false;
-    }
-
-    BigDecimal leftOver = getInputsValue().subtract(value);
-    transactionId = calculateHash();
-    outputs.add(new TransactionOutput(this.recipient, value, transactionId));
-    outputs.add(new TransactionOutput(this.sender, leftOver, transactionId));
-
-    for (TransactionOutput o : outputs) {
-      ledger.addUTXO(o.getId(), o);
-    }
-
-    for (TransactionInput input : inputs) {
-      if (input.getUTXO() == null) {
-        continue;
-      }
-      ledger.getUTXOs().remove(input.getUTXO().getId());
-    }
+    AccountManager.getInstance().updateAccountsOnTransaction(this);
     return true;
-  }
-
-  public void addOutput(TransactionOutput output) {
-    outputs.add(output);
-  }
-
-  public void addInput(TransactionInput input) {
-    inputs.add(input);
-  }
-
-  public BigDecimal getInputsValue() {
-    BigDecimal total = new BigDecimal("0.00");
-    for (TransactionInput input : inputs) {
-      if (input.getUTXO() == null) {
-        continue;
-      }
-      total = total.add(input.getUTXO().getValue());
-    }
-    return total;
-  }
-
-  public BigDecimal getOutputsValue() {
-    BigDecimal total = new BigDecimal("0.00");
-    for (TransactionOutput output : outputs) {
-      total = total.add(output.getValue());
-    }
-    return total;
   }
 
   private String calculateHash() {
@@ -114,14 +56,6 @@ public class Transaction {
 
   public String getTransactionId() {
     return transactionId;
-  }
-
-  public ArrayList<TransactionOutput> getOutputs() {
-    return outputs;
-  }
-
-  public ArrayList<TransactionInput> getInputs() {
-    return inputs;
   }
 
   public PublicKey getRecipient() {
