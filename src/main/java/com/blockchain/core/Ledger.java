@@ -4,7 +4,6 @@ import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Ledger {
 
@@ -13,7 +12,6 @@ public class Ledger {
   private ArrayList<Block> blockChain;
   private BigDecimal minimumTransaction;
   private int difficulty;
-  private HashMap<String, TransactionOutput> UTXOs; //list of all unspent transactions.
 
   public static Ledger getInstance() {
     if (instance == null) {
@@ -24,7 +22,6 @@ public class Ledger {
 
   private Ledger() {
     blockChain = new ArrayList<>();
-    UTXOs = new HashMap<>();
     difficulty = 3;
     minimumTransaction = new BigDecimal("1.00");
   }
@@ -42,14 +39,6 @@ public class Ledger {
     if (difficulty > 0) {
       this.difficulty = difficulty;
     }
-  }
-
-  public HashMap<String, TransactionOutput> getUTXOs() {
-    return UTXOs;
-  }
-
-  public void addUTXO(String outputId, TransactionOutput transactionOutput) {
-    UTXOs.put(outputId, transactionOutput);
   }
 
   public Block getLastBlock() {

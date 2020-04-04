@@ -6,9 +6,6 @@ import org.apache.log4j.Logger;
 import java.math.BigDecimal;
 import java.security.*;
 import java.security.spec.ECGenParameterSpec;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A single account in the network
@@ -18,13 +15,25 @@ public class Account {
   private final Logger LOG = Logger.getLogger(Account.class);
   private PrivateKey privateKey;
   private PublicKey publicKey;
-  private Ledger ledger;
+  private BigDecimal balance;
 
-  public HashMap<String, TransactionOutput> ownedUTXOs = new HashMap<>();
-
-  public Account() {
+  protected Account() {
     generateKeyPair();
-    ledger = Ledger.getInstance();
+    balance = new BigDecimal("0.00");
+  }
+
+  public static Account newAccount() {
+    Account newAccount = new Account();
+    AccountManager.getInstance().registerAccount(newAccount);
+    return newAccount;
+  }
+
+  public void subtractBalance(BigDecimal amount) {
+    balance = balance.subtract(amount);
+  }
+
+  public void addBalance(BigDecimal amount) {
+    balance = balance.add(amount);
   }
 
   /**
@@ -48,24 +57,7 @@ public class Account {
   }
 
   public BigDecimal getBalance() {
-    return populateOwnedUtxosAndReturnBalance();
-  }
-
-  /**
-   * The way to get the user's balance is to check the ledger for UTXOs, and for
-   * each of the user's own total them up.
-   * @return current user's balance, which is the sum of their UTXOs
-   */
-  private BigDecimal populateOwnedUtxosAndReturnBalance() {
-    BigDecimal total = new BigDecimal("0.00");
-    for (Map.Entry<String, TransactionOutput> item : ledger.getUTXOs().entrySet()) {
-      TransactionOutput UTXO = item.getValue();
-      if (UTXO.isMine(publicKey)) {
-        ownedUTXOs.put(UTXO.getId(), UTXO);
-        total = total.add(UTXO.getValue());
-      }
-    }
-    return total;
+    return balance;
   }
 
   /**
@@ -80,24 +72,8 @@ public class Account {
       return null;
     }
 
-    ArrayList<TransactionInput> inputs = new ArrayList<>();
-
-    BigDecimal total = new BigDecimal("0.00");
-    for (Map.Entry<String, TransactionOutput> item : ownedUTXOs.entrySet()) {
-      TransactionOutput UTXO = item.getValue();
-      total = total.add(UTXO.getValue());
-      inputs.add(new TransactionInput(UTXO.getId()));
-      if (total.compareTo(value) > 0) {
-        break;
-      }
-    }
-
-    Transaction newTransaction = new Transaction(publicKey, recipient, value, inputs);
+    Transaction newTransaction = new Transaction(publicKey, recipient, value);
     newTransaction.generateSignature(privateKey);
-
-    for (TransactionInput input : inputs) {
-      ownedUTXOs.remove(input.getTransactionOutputId());
-    }
     return newTransaction;
   }
 

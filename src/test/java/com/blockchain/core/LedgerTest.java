@@ -25,9 +25,9 @@ public class LedgerTest {
   public void before() {
     Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
     ledger = Ledger.getInstance();
-    accountA = new Account();
-    accountB = new Account();
-    coinBase = new Account();
+    accountA = Account.newAccount();
+    accountB = Account.newAccount();
+    coinBase = CoinbaseAccount.newAccount();
   }
 
   @After
@@ -38,16 +38,13 @@ public class LedgerTest {
   @Test
   public void test_simpleBlockchain() {
 
-    ledger.setDifficulty(3);
+    ledger.setDifficulty(2);
     ledger.setMinimumTransaction(new BigDecimal("1.00"));
     assertEquals(ledger.getMinimumTransaction().compareTo(new BigDecimal("1.00")), 0);
 
-    Transaction genesisTransaction = new Transaction(coinBase.getPublicKey(), accountA.getPublicKey(), new BigDecimal("100.00"), null);
+    Transaction genesisTransaction = new Transaction(coinBase.getPublicKey(), accountA.getPublicKey(), new BigDecimal("100.00"));
     genesisTransaction.generateSignature(coinBase.getPrivateKey());
     genesisTransaction.setGenesisTransaction();
-    TransactionOutput genesisTxo = new TransactionOutput(genesisTransaction.getRecipient(), genesisTransaction.getValue(), genesisTransaction.getTransactionId());
-    genesisTransaction.addOutput(genesisTxo);
-    ledger.addUTXO(genesisTransaction.getOutputs().get(0).getId(), genesisTransaction.getOutputs().get(0));
 
     Block genesis = new Block("0", getTimestamp());
     genesis.addTransaction(genesisTransaction);
@@ -100,12 +97,9 @@ public class LedgerTest {
     final BigDecimal TOTAL_VAL = new BigDecimal("10000000.00");
 
 
-    Transaction genesisTransaction = new Transaction(coinBase.getPublicKey(), accountA.getPublicKey(), TOTAL_VAL, null);
+    Transaction genesisTransaction = new Transaction(coinBase.getPublicKey(), accountA.getPublicKey(), TOTAL_VAL);
     genesisTransaction.generateSignature(coinBase.getPrivateKey());
     genesisTransaction.setGenesisTransaction();
-    TransactionOutput genesisTxo = new TransactionOutput(genesisTransaction.getRecipient(), genesisTransaction.getValue(), genesisTransaction.getTransactionId());
-    genesisTransaction.addOutput(genesisTxo);
-    ledger.addUTXO(genesisTransaction.getOutputs().get(0).getId(), genesisTransaction.getOutputs().get(0));
 
     Block genesis = new Block("0", getTimestamp());
     genesis.addTransaction(genesisTransaction);
