@@ -69,4 +69,8 @@ public class Transaction {
   public void setGenesisTransaction() {
     transactionId = "0";
   }
+
+  public String getSignature() {
+    return new String(signature);
+  }
 }

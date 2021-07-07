@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 
 public class LedgerTest {
 
-  private Ledger ledger = Ledger.getInstance();
+  private Ledger ledger;
   private Account accountA;
   private Account accountB;
   private Account coinBase;
