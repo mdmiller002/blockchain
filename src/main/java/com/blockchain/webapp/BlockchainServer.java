@@ -11,6 +11,7 @@ public class BlockchainServer {
   public static void main(String[] args) {
     SpringApplication.run(BlockchainServer.class, args);
     Ledger ledger = Ledger.getInstance();
+    
   }
 
 }
